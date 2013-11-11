@@ -5,9 +5,11 @@ import play.api.mvc._
 import services._
 import models._
 import play.api.libs.json._
+import com.mongodb.casbah.Imports._
 
 object Application extends Controller {
-  
+  var aMockList:List[Rating] = List()
+  val mockFeatures = List("EaseOfUse","Durability","Battery")
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
@@ -29,11 +31,14 @@ object Application extends Controller {
 
       }
   def getProductRatings(id:String) = Action {
-    val reviewList = RatingService.getProductRatings(id)
-    Ok(Json.toJson(reviewList))
+    //val reviewList = RatingService.getProductRatings(id)
+    
+    Ok(Json.toJson(aMockList))
   }
   def addProductRatings(id:String) = Action(parse.json){ req =>
-    val mbProduct = RateableObject.findByRateableObjId(id)
+    //val mbProduct = RateableObject.findByRateableObjId(id)
+   
+    val mbProduct = Some(new RateableObject(new ObjectId,id,mockFeatures))
     mbProduct match {
       case Some(ro) => {
         val json:JsValue = req.body
@@ -42,7 +47,7 @@ object Application extends Controller {
         
         modifiedJson.validate[Rating].fold(
         valid = (validRating => {
-          val mbId = RatingService.addProductRating(validRating)
+          val mbId = mockAdd(validRating)//RatingService.addProductRating(validRating)
           mbId match {
             case Some(id)=> {Ok(Json.toJson("msg" -> "Added rating for product : " + validRating.objId))}
             case _ => {InternalServerError("Bad things happened")}
@@ -50,12 +55,16 @@ object Application extends Controller {
         }),
         invalid = ( e => {BadRequest("Detected error " + JsError.toFlatJson(e))} ))
       }
-      case None => {BadRequest("Couldnt find product in db")}
+      case _ => {BadRequest("Couldnt find product in db")}
     }
     
     
     
     
+  }
+  private def mockAdd(rating:Rating):Option[ObjectId] = {
+    aMockList = aMockList :+ rating
+    Some(new ObjectId)
   }
   
 }
