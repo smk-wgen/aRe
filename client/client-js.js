@@ -1,6 +1,6 @@
 var ARatingService = ARatingService || {};
 
-ARatingService.WebServiceConnector = function WebServiceConnector(subKey, uuid) {
+ARatingService.WebServiceConnector = function WebServiceConnector() {
     'use strict';
    var host= "localhost:9000";
    var buildRatingsRequest = function(productId){
