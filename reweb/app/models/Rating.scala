@@ -22,8 +22,9 @@ object Rating extends ModelCompanion[Rating,ObjectId]{
   def findRatings(objId:String):List[Rating] = {
     Rating.find(MongoDBObject("objId" -> objId)).toList
   }
-  private def json2Object(productId:String,srcId:Option[String],strMap:Map[String,String],reviewText:Option[String]):Rating = {
-    val ratingsMap:Map[String,Int] = strMap.map{case(k,v) => (k,v.toInt)}
+  private def json2Object(productId:String,srcId:Option[String],strMap:Map[String,Int],reviewText:Option[String]):Rating = {
+    println("Generate Rating object from Json")
+    val ratingsMap:Map[String,Int] = strMap //.map{case(k,v) => (k,v.toInt)}
     new Rating(new ObjectId,productId,srcId,ratingsMap,reviewText)
   }
 
@@ -31,7 +32,7 @@ object Rating extends ModelCompanion[Rating,ObjectId]{
   implicit val ratingReads = (
     (__ \ "productId").read[String] and
       (__ \ "sourceId").read[Option[String]] and
-      (__ \ "ratingMap").read[Map[String,String]] and
+      (__ \ "ratingMap").read[Map[String,Int]] and
       (__ \ "review").read[Option[String]] 
     )(Rating.json2Object _)
 

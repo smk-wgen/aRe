@@ -14,7 +14,7 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
   def getProduct(id:String) = CORSAction {
-    val mockObj = new RateableObject(new ObjectId,"prdCode",List())
+    val mockObj = new RateableObject(new ObjectId,"prdCode",mockFeatures)
     Ok(Json.toJson(mockObj))
   }
   def addProduct = Action(parse.json) {req =>
@@ -45,6 +45,7 @@ object Application extends Controller {
     mbProduct match {
       case Some(ro) => {
         val json:JsValue = req.body
+        println("Adding product rating " + json)
         val modifiedJson: JsObject =  Json.obj("productId" -> ro.objId) ++ json.as[JsObject]
         System.out.println("Modified Json " + modifiedJson)
         
