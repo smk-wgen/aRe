@@ -13,7 +13,10 @@ object Application extends Controller {
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
-  
+  def getProduct(id:String) = CORSAction {
+    val mockObj = new RateableObject(new ObjectId,"prdCode",List())
+    Ok(Json.toJson(mockObj))
+  }
   def addProduct = Action(parse.json) {req =>
       val json = req.body
       System.out.println("Json is " + json)
@@ -30,12 +33,12 @@ object Application extends Controller {
       
 
       }
-  def getProductRatings(id:String) = Action {
+  def getProductRatings(id:String) = CORSAction {
     //val reviewList = RatingService.getProductRatings(id)
     
     Ok(Json.toJson(aMockList))
   }
-  def addProductRatings(id:String) = Action(parse.json){ req =>
+  def addProductRatings(id:String) = CORSAction.foo(parse.json){ req =>
     //val mbProduct = RateableObject.findByRateableObjId(id)
    
     val mbProduct = Some(new RateableObject(new ObjectId,id,mockFeatures))
@@ -49,7 +52,8 @@ object Application extends Controller {
         valid = (validRating => {
           val mbId = mockAdd(validRating)//RatingService.addProductRating(validRating)
           mbId match {
-            case Some(id)=> {Ok(Json.toJson("msg" -> "Added rating for product : " + validRating.objId))}
+            case Some(id)=> {Ok(Json.toJson("msg" -> "Added rating for product : " + validRating.objId))
+              }
             case _ => {InternalServerError("Bad things happened")}
           }
         }),
@@ -65,6 +69,16 @@ object Application extends Controller {
   private def mockAdd(rating:Rating):Option[ObjectId] = {
     aMockList = aMockList :+ rating
     Some(new ObjectId)
+  }
+  
+  def options(url: String) = Action {
+	Ok("").withHeaders(
+	"Access-Control-Allow-Origin" -> "*",
+	"Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
+	"Access-Control-Allow-Headers" -> "Content-Type, X-Requested-With, Accept",
+	// cache access control response for one day
+	"Access-Control-Max-Age" -> (60 * 60 * 24).toString
+	)
   }
   
 }

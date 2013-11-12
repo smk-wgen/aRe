@@ -3,11 +3,14 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-POST        /product                    controllers.Application.addProduct
+GET     /                                   controllers.Application.index
+POST        /product                        controllers.Application.addProduct
+GET         /api/product/:id                controllers.Application.getProduct(id:String)
 
-GET         /product/:id/ratings        controllers.Application.getProductRatings(id:String)
-POST        /product/:id/ratings        controllers.Application.addProductRatings(id:String)
+GET         /api/product/:id/ratings        controllers.Application.getProductRatings(id:String)
+POST        /api/product/:id/ratings        controllers.Application.addProductRatings(id:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+OPTIONS /api/*url             controllers.Application.options(url: String)

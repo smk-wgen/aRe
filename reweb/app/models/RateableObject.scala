@@ -29,4 +29,10 @@ object RateableObject extends ModelCompanion[RateableObject,ObjectId]{
       (__ \ "features").read[List[String]] 
     )(RateableObject.json2Object _)
   
+  implicit object RateableObjectWriter extends Writes[RateableObject]{
+    def writes(aRateableObject:RateableObject):JsValue  = {
+      Json.obj("productId" -> aRateableObject.objId,"features" -> aRateableObject.features)
+    }
+  }
+  
 }
