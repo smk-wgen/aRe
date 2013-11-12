@@ -11,18 +11,18 @@
         <script src="@routes.Assets.at("javascripts/client-js.js")" type="text/javascript"></script>
     </head>
     <body>
-        @content
+        
         <script>
 			//document.write("Hello World!");
-			var connector = new ARatingService.WebServiceConnector();
+			var connector = new ARatingService.WebServiceConnector(1);
 			var count =0;
 			console.log("So far so good");
-			var response = connector.getRatings(1);
+			var response = connector.getRatings();
 			function postRating(){
 				   var sampleRating = {"EaseOfUse" : 4,
 						   "Durability" : 3,"Battery" : 0
 						   };
-                   connector.addRating(1,sampleRating,"Anonymous","This is review #"+count);
+                   connector.addRating(sampleRating,"Anonymous","This is review #"+count);
                    count = count + 1;
 				}
 		</script>

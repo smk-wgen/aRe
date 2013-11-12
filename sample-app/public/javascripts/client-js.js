@@ -1,10 +1,11 @@
 var ARatingService = ARatingService || {};
 
-ARatingService.WebServiceConnector = function WebServiceConnector() {
+ARatingService.WebServiceConnector = function WebServiceConnector(productId) {
     'use strict';
-   var host= "http://localhost:9000/api";
-   var buildRatingsRequest = function(productId){
-       return host+"/product/"+productId+"/ratings";
+   var host= "http://localhost:9000/api/";
+   
+   var product = {
+		   id : productId
    };
    var makeCall = function(url,type,payload){
        var xmlHttp = null;
@@ -14,14 +15,28 @@ ARatingService.WebServiceConnector = function WebServiceConnector() {
        xmlHttp.send( payload );
        return xmlHttp.responseText;
    };
-   this.getRatings = function(productId){
-        var url = buildRatingsRequest(productId);
+   var init = function(){
+	   console.log("Initializing with product details..");
+	   var productUrl = host+"product/"+productId;
+	   var response = makeCall(productUrl,"GET",null);
+       console.log(response);
+       product.features = response.features;
+	   
+   };
+   var buildRatingsRequest = function(){
+	   console.log("Product Id is defined",productId);
+       return host+"product/"+productId+"/ratings";
+   };
+   init();
+   
+   this.getRatings = function(){
+        var url = buildRatingsRequest();
         var response = makeCall(url,"GET",null);
         console.log(response);
         //make a call to backend  use XmlHttpRequest
    };
-   this.addRating = function(productId,rating,who,review){
-        var url = buildRatingsRequest(productId);
+   this.addRating = function(rating,who,review){
+        var url = buildRatingsRequest();
         var ratingObj = {
             'sourceId' : who,
             'ratingMap' : rating,
