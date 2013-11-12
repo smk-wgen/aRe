@@ -8,8 +8,24 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/client-js.js")" type="text/javascript"></script>
     </head>
     <body>
         @content
+        <script>
+			//document.write("Hello World!");
+			var connector = new ARatingService.WebServiceConnector();
+			var count =0;
+			console.log("So far so good");
+			var response = connector.getRatings(1);
+			function postRating(){
+				   var sampleRating = {"EaseOfUse" : 4,
+						   "Durability" : 3,"Battery" : 0
+						   };
+                   connector.addRating(1,sampleRating,"Anonymous","This is review #"+count);
+                   count = count + 1;
+				}
+		</script>
+		<button onclick="postRating()">Add rating</button> 
     </body>
 </html>
