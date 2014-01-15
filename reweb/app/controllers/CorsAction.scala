@@ -14,7 +14,6 @@ object CORSAction {
   }
 
   def apply(block: => ResultWithHeaders): Action[AnyContent] = {
-    println("In apply method")
     this.apply(_ => block)
   }
  

@@ -4,13 +4,13 @@ import models._
 
 object RatingService {
   
-  def getProductRatings(productId:String):List[Rating]={
+  def getProductRatings(productId:String):List[MRating]={
     
-     Rating.findRatings(productId)
+     MRating.findRatings(productId)
     
   }
-  def addProductRating(rating:Rating) = {
-    Rating.insert(rating)
+  def addProductRating(rating:MRating) = {
+    MRating.insert(rating)
   }
 
 }

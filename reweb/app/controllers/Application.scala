@@ -1,5 +1,6 @@
 package controllers
 
+import _root_.db.models.MongoRateableObject
 import play.api._
 import play.api.mvc._
 import services._
@@ -8,21 +9,21 @@ import play.api.libs.json._
 import com.mongodb.casbah.Imports._
 
 object Application extends Controller {
-  var aMockList:List[Rating] = List()
+  var aMockList:List[MRating] = List()
   val mockFeatures = List("EaseOfUse","Durability","Battery")
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
   def getProduct(id:String) = CORSAction {
-    val mockObj = new RateableObject(new ObjectId,"prdCode",mockFeatures)
+    val mockObj = new MongoRateableObject(new ObjectId,"prdCode",mockFeatures)
     Ok(Json.toJson(mockObj))
   }
   def addProduct = Action(parse.json) {req =>
       val json = req.body
       System.out.println("Json is " + json)
-      json.validate[RateableObject].fold(
+      json.validate[MongoRateableObject].fold(
           valid = (validRO => {
-            val rateableObjId = RateableObject.insert(validRO) //returns an option of ObjectId
+            val rateableObjId = MongoRateableObject.insert(validRO) //returns an option of ObjectId
             rateableObjId match {
               case Some(objectId) => {Ok(Json.toJson("msg" -> "Added product with id=" + validRO.objId)) }
               case _ => {InternalServerError("Bad things happened")}
@@ -41,7 +42,7 @@ object Application extends Controller {
   def addProductRatings(id:String) = CORSAction.foo(parse.json){ req =>
     //val mbProduct = RateableObject.findByRateableObjId(id)
    
-    val mbProduct = Some(new RateableObject(new ObjectId,id,mockFeatures))
+    val mbProduct = Some(new MongoRateableObject(new ObjectId,id,mockFeatures))
     mbProduct match {
       case Some(ro) => {
         val json:JsValue = req.body
@@ -49,7 +50,7 @@ object Application extends Controller {
         val modifiedJson: JsObject =  Json.obj("productId" -> ro.objId) ++ json.as[JsObject]
         System.out.println("Modified Json " + modifiedJson)
         
-        modifiedJson.validate[Rating].fold(
+        modifiedJson.validate[MRating].fold(
         valid = (validRating => {
           val mbId = mockAdd(validRating)//RatingService.addProductRating(validRating)
           mbId match {
@@ -67,19 +68,19 @@ object Application extends Controller {
     
     
   }
-  private def mockAdd(rating:Rating):Option[ObjectId] = {
+  private def mockAdd(rating:MRating):Option[ObjectId] = {
     aMockList = aMockList :+ rating
     Some(new ObjectId)
   }
   
-  def options(url: String) = Action {
-	Ok("").withHeaders(
-	"Access-Control-Allow-Origin" -> "*",
-	"Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
-	"Access-Control-Allow-Headers" -> "Content-Type, X-Requested-With, Accept",
-	// cache access control response for one day
-	"Access-Control-Max-Age" -> (60 * 60 * 24).toString
-	)
-  }
+//  def options(url: String) = Action {
+//	Ok("").withHeaders(
+//	"Access-Control-Allow-Origin" -> "*",
+//	"Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
+//	"Access-Control-Allow-Headers" -> "Content-Type, X-Requested-With, Accept",
+//	// cache access control response for one day
+//	"Access-Control-Max-Age" -> (60 * 60 * 24).toString
+//	)
+//  }
   
 }
